@@ -17,11 +17,13 @@ class TimeInterval implements TimeIntervalInterface
     /**
      * TimeInterval constructor.
      *
-     * @param int $seconds Amount of seconds
+     * @param int $value   Value
+     * @param int $measure Unit of time, TimeIntervalInterface::HOUR[MINUTE|SECOND]
+     *                     default: SECOND
      */
-    public function __construct(int $seconds = 0)
+    public function __construct(int $value = 0, $measure = self::SECOND)
     {
-        $this->seconds = $seconds;
+        $this->seconds = $value * $measure;
     }
 
     /**
