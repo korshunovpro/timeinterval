@@ -11,7 +11,7 @@ use InvalidArgumentException;
  */
 class TimeInterval implements TimeIntervalInterface
 {
-    /** @var string */
+    // Error messages
     protected const ERROR_CREATE_FROM_DATE_STRING = 'Wrong format, expected only values of days, hours, minutes and seconds';
     protected const ERROR_CREATE_FROM_HMS = 'Wrong format, expected [-]h:m[:s]';
 
