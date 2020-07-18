@@ -16,7 +16,7 @@ class TimeInterval implements TimeIntervalInterface
     protected const ERROR_CREATE_FROM_HMS = 'Wrong format, expected [-]h:m[:s]';
 
     /** @var int Amount of seconds */
-    protected int $seconds;
+    protected $seconds;
 
     /**
      * TimeInterval constructor.
