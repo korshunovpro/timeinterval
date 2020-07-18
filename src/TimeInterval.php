@@ -11,19 +11,27 @@ use InvalidArgumentException;
  */
 class TimeInterval implements TimeIntervalInterface
 {
+    // Second per units of time ratio
+    protected const SECOND_PER_UNIT = [
+        self::DAY => 86400,
+        self::HOUR => 3600,
+        self::MINUTE => 60,
+        self::SECOND => 1,
+    ];
+
     /** @var int Amount of seconds */
     protected $seconds;
 
     /**
      * TimeInterval constructor.
      *
-     * @param int $value   Value
+     * @param int $value Value
      * @param int $measure Unit of time, TimeIntervalInterface::HOUR[MINUTE|SECOND]
      *                     default: SECOND
      */
     public function __construct(int $value = 0, $measure = self::SECOND)
     {
-        $this->seconds = $value * $measure;
+        $this->seconds = $value * self::SECOND_PER_UNIT[$measure];
     }
 
     /**
@@ -43,9 +51,9 @@ class TimeInterval implements TimeIntervalInterface
             );
         }
 
-        $seconds = $interval->d * self::DAY
-            + $interval->h * self::HOUR
-            + $interval->m * self::MINUTE
+        $seconds = $interval->d * self::SECOND_PER_UNIT[self::DAY]
+            + $interval->h * self::SECOND_PER_UNIT[self::HOUR]
+            + $interval->m * self::SECOND_PER_UNIT[self::MINUTE]
             + $interval->s
             * ($interval->invert ? -1 : 1);
 
@@ -71,9 +79,10 @@ class TimeInterval implements TimeIntervalInterface
         }
 
         $value = explode(':', $value);
-        $hours = (int) $value[0] * self::HOUR;
-        $minutes = (int) $value[1] * self::MINUTE;
-        $seconds = !empty($value[2]) ? abs((int) $value[2]) : 0;
+
+        $hours = (int)$value[0] * self::SECOND_PER_UNIT[self::HOUR];
+        $minutes = (int)$value[1] * self::SECOND_PER_UNIT[self::MINUTE];
+        $seconds = !empty($value[2]) ? abs((int)$value[2]) : 0;
 
         $seconds = $sign * (abs($hours) + $minutes + $seconds);
 
@@ -92,7 +101,7 @@ class TimeInterval implements TimeIntervalInterface
         $str[] = abs($this->getSeconds()) . 'S';
 
         $interval = new DateInterval('PT' . implode('', $str));
-        $interval->invert = (int) $this->seconds < 0;
+        $interval->invert = (int)$this->seconds < 0;
 
         return $interval;
     }
@@ -100,7 +109,7 @@ class TimeInterval implements TimeIntervalInterface
     /**
      * {@inheritdoc}
      *
-     * @param int $value   Value
+     * @param int $value Value
      * @param int $measure Unit of time, TimeIntervalInterface::HOUR[MINUTE|SECOND]
      *                     default: SECOND
      *
@@ -108,7 +117,7 @@ class TimeInterval implements TimeIntervalInterface
      */
     public function modify(int $value, int $measure = self::SECOND): TimeIntervalInterface
     {
-        $this->seconds += $value * $measure;
+        $this->seconds += $value * self::SECOND_PER_UNIT[$measure];
 
         return $this;
     }
@@ -141,51 +150,39 @@ class TimeInterval implements TimeIntervalInterface
      * {@inheritdoc}
      *
      * @param int $precision Rounding precision. Default = 0.
-     * @param int $mode      Rounding mode. Default = PHP_ROUND_HALF_UP.
+     * @param int $mode Rounding mode. Default = PHP_ROUND_HALF_UP.
      *
      * @return float
      */
     public function convertToHours(int $precision = 0, $mode = PHP_ROUND_HALF_UP): float
     {
-        if ($precision >= 0) {
-            return round($this->seconds / self::HOUR, $precision, $mode);
-        }
-
-        return (int) ($this->seconds / self::HOUR);
+        return $this->convert(self::HOUR, $precision, $mode);
     }
 
     /**
      * {@inheritdoc}
      *
      * @param int $precision Rounding precision. Default = 0.
-     * @param int $mode      Rounding mode. Default = PHP_ROUND_HALF_UP.
+     * @param int $mode Rounding mode. Default = PHP_ROUND_HALF_UP.
      *
      * @return float
      */
     public function convertToMinutes(int $precision = 0, $mode = PHP_ROUND_HALF_UP): float
     {
-        if ($precision >= 0) {
-            return round($this->seconds / self::MINUTE, $precision, $mode);
-        }
-
-        return (int) ($this->seconds / self::MINUTE);
+        return $this->convert(self::MINUTE, $precision, $mode);
     }
 
     /**
      * {@inheritdoc}
      *
      * @param int $precision Rounding precision. Default = 0.
-     * @param int $mode      Rounding mode. Default = PHP_ROUND_HALF_UP.
+     * @param int $mode Rounding mode. Default = PHP_ROUND_HALF_UP.
      *
      * @return float
      */
     public function convertToSeconds(int $precision = 0, $mode = PHP_ROUND_HALF_UP): float
     {
-        if ($precision >= 0) {
-            return round($this->seconds, $precision, $mode);
-        }
-
-        return (int) $this->seconds;
+        return $this->convert(self::SECOND, $precision, $mode);
     }
 
     /**
@@ -193,7 +190,7 @@ class TimeInterval implements TimeIntervalInterface
      */
     public function getHours(): int
     {
-        return (int) ($this->seconds / self::HOUR);
+        return (int)($this->seconds / self::HOUR);
     }
 
     /**
@@ -201,7 +198,7 @@ class TimeInterval implements TimeIntervalInterface
      */
     public function getMinutes(): int
     {
-        return (int) ($this->seconds % self::HOUR / self::MINUTE);
+        return (int)($this->seconds % self::HOUR / self::MINUTE);
     }
 
     /**
@@ -209,7 +206,7 @@ class TimeInterval implements TimeIntervalInterface
      */
     public function getSeconds(): int
     {
-        return (int) ($this->seconds % self::HOUR % self::MINUTE);
+        return (int)($this->seconds % self::HOUR % self::MINUTE);
     }
 
     /**
@@ -263,5 +260,23 @@ class TimeInterval implements TimeIntervalInterface
             '%x' => abs($this->convertToMinutes()),
             '%X' => sprintf('%02d', abs($this->convertToMinutes())),
         ];
+    }
+
+    /**
+     * Convert to other unit.
+     *
+     * @param int $measure
+     * @param int $precision
+     * @param int $mode
+     *
+     * @return float
+     */
+    protected function convert(int $measure, int $precision = 0, $mode = PHP_ROUND_HALF_UP): float
+    {
+        return round(
+            $this->seconds / self::SECOND_PER_UNIT[$measure],
+            $precision,
+            $mode
+        );
     }
 }
