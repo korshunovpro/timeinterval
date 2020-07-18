@@ -11,9 +11,13 @@ use InvalidArgumentException;
  */
 class TimeInterval implements TimeIntervalInterface
 {
-    /** @var string */
-    protected const ERROR_CREATE_FROM_DATE_STRING = 'Wrong format, expected only values of days, hours, minutes and seconds';
-    protected const ERROR_CREATE_FROM_HMS = 'Wrong format, expected [-]h:m[:s]';
+    // Second per units of time ratio
+    protected const SECOND_PER_UNIT = [
+        self::DAY => 86400,
+        self::HOUR => 3600,
+        self::MINUTE => 60,
+        self::SECOND => 1,
+    ];
 
     /** @var int Amount of seconds */
     protected $seconds;
@@ -21,11 +25,15 @@ class TimeInterval implements TimeIntervalInterface
     /**
      * TimeInterval constructor.
      *
-     * @param int $seconds Amount of seconds
+     * @param int $value    Value
+     * @param int $timeUnit Unit of time, TimeIntervalInterface::HOUR[MINUTE|SECOND]
+     *                     default: SECOND
      */
-    public function __construct(int $seconds = 0)
+    public function __construct(int $value = 0, $timeUnit = self::SECOND)
     {
-        $this->seconds = $seconds;
+        $this->exceptionIfUnitNotExist($timeUnit);
+
+        $this->seconds = $value * self::SECOND_PER_UNIT[$timeUnit];
     }
 
     /**
@@ -40,12 +48,14 @@ class TimeInterval implements TimeIntervalInterface
         $interval = DateInterval::createFromDateString($dateString);
 
         if (!empty($interval->y) || !empty($interval->m)) {
-            throw new InvalidArgumentException(self::ERROR_CREATE_FROM_DATE_STRING);
+            throw new InvalidArgumentException(
+                'Wrong format, expected only values of days, hours, minutes and seconds'
+            );
         }
 
-        $seconds = $interval->d * self::DAY
-            + $interval->h * self::HOUR
-            + $interval->m * self::MINUTE
+        $seconds = $interval->d * self::SECOND_PER_UNIT[self::DAY]
+            + $interval->h * self::SECOND_PER_UNIT[self::HOUR]
+            + $interval->m * self::SECOND_PER_UNIT[self::MINUTE]
             + $interval->s
             * ($interval->invert ? -1 : 1);
 
@@ -55,25 +65,26 @@ class TimeInterval implements TimeIntervalInterface
     /**
      * {@inheritdoc}
      *
-     * @param string $value String [-]h:m[:s]
+     * @param string $string String [-]h:m[:s]
      */
-    public static function createFromHMS(string $value): TimeIntervalInterface
+    public static function createFromHMS(string $string): TimeIntervalInterface
     {
-        $value = trim($value);
+        $string = trim($string);
 
-        if (!preg_match('#^[-+]?\d+:\d+(:\d+)?$#is', $value)) {
-            throw new InvalidArgumentException(self::ERROR_CREATE_FROM_HMS);
+        if (!preg_match('#^[-+]?\d+:\d+(:\d+)?$#is', $string)) {
+            throw new InvalidArgumentException('Wrong format, expected [-]h:m[:s]');
         }
 
         $sign = 1;
-        if (0 === stripos($value, '-')) {
+        if (0 === stripos($string, '-')) {
             $sign = -1;
         }
 
-        $value = explode(':', $value);
-        $hours = (int) $value[0] * self::HOUR;
-        $minutes = (int) $value[1] * self::MINUTE;
-        $seconds = !empty($value[2]) ? abs((int) $value[2]) : 0;
+        $value = explode(':', $string);
+
+        $hours = (int)$value[0] * self::SECOND_PER_UNIT[self::HOUR];
+        $minutes = (int)$value[1] * self::SECOND_PER_UNIT[self::MINUTE];
+        $seconds = !empty($value[2]) ? abs((int)$value[2]) : 0;
 
         $seconds = $sign * (abs($hours) + $minutes + $seconds);
 
@@ -92,7 +103,7 @@ class TimeInterval implements TimeIntervalInterface
         $str[] = abs($this->getSeconds()) . 'S';
 
         $interval = new DateInterval('PT' . implode('', $str));
-        $interval->invert = (int) $this->seconds < 0;
+        $interval->invert = (int)$this->seconds < 0;
 
         return $interval;
     }
@@ -100,15 +111,17 @@ class TimeInterval implements TimeIntervalInterface
     /**
      * {@inheritdoc}
      *
-     * @param int $value   Value
-     * @param int $measure Unit of time, TimeIntervalInterface::HOUR[MINUTE|SECOND]
+     * @param int $value    Value
+     * @param int $timeUnit Unit of time, TimeIntervalInterface::HOUR[MINUTE|SECOND]
      *                     default: SECOND
      *
      * @return $this
      */
-    public function modify(int $value, int $measure = self::SECOND): TimeIntervalInterface
+    public function modify(int $value, int $timeUnit = self::SECOND): TimeIntervalInterface
     {
-        $this->seconds += $value * $measure;
+        $this->exceptionIfUnitNotExist($timeUnit);
+
+        $this->seconds += $value * self::SECOND_PER_UNIT[$timeUnit];
 
         return $this;
     }
@@ -147,11 +160,7 @@ class TimeInterval implements TimeIntervalInterface
      */
     public function convertToHours(int $precision = 0, $mode = PHP_ROUND_HALF_UP): float
     {
-        if ($precision >= 0) {
-            return round($this->seconds / self::HOUR, $precision, $mode);
-        }
-
-        return (int) ($this->seconds / self::HOUR);
+        return $this->convert(self::HOUR, $precision, $mode);
     }
 
     /**
@@ -164,11 +173,7 @@ class TimeInterval implements TimeIntervalInterface
      */
     public function convertToMinutes(int $precision = 0, $mode = PHP_ROUND_HALF_UP): float
     {
-        if ($precision >= 0) {
-            return round($this->seconds / self::MINUTE, $precision, $mode);
-        }
-
-        return (int) ($this->seconds / self::MINUTE);
+        return $this->convert(self::MINUTE, $precision, $mode);
     }
 
     /**
@@ -181,11 +186,7 @@ class TimeInterval implements TimeIntervalInterface
      */
     public function convertToSeconds(int $precision = 0, $mode = PHP_ROUND_HALF_UP): float
     {
-        if ($precision >= 0) {
-            return round($this->seconds, $precision, $mode);
-        }
-
-        return (int) $this->seconds;
+        return $this->convert(self::SECOND, $precision, $mode);
     }
 
     /**
@@ -193,7 +194,7 @@ class TimeInterval implements TimeIntervalInterface
      */
     public function getHours(): int
     {
-        return (int) ($this->seconds / self::HOUR);
+        return (int)($this->seconds / self::HOUR);
     }
 
     /**
@@ -201,7 +202,7 @@ class TimeInterval implements TimeIntervalInterface
      */
     public function getMinutes(): int
     {
-        return (int) ($this->seconds % self::HOUR / self::MINUTE);
+        return (int)($this->seconds % self::HOUR / self::MINUTE);
     }
 
     /**
@@ -209,7 +210,7 @@ class TimeInterval implements TimeIntervalInterface
      */
     public function getSeconds(): int
     {
-        return (int) ($this->seconds % self::HOUR % self::MINUTE);
+        return (int)($this->seconds % self::HOUR % self::MINUTE);
     }
 
     /**
@@ -263,5 +264,39 @@ class TimeInterval implements TimeIntervalInterface
             '%x' => abs($this->convertToMinutes()),
             '%X' => sprintf('%02d', abs($this->convertToMinutes())),
         ];
+    }
+
+    /**
+     * Convert to other unit.
+     *
+     * @param int $timeUnit
+     * @param int $precision
+     * @param int $mode
+     *
+     * @return float
+     */
+    protected function convert(int $timeUnit, int $precision = 0, $mode = PHP_ROUND_HALF_UP): float
+    {
+        $this->exceptionIfUnitNotExist($timeUnit);
+
+        return round(
+            $this->seconds / self::SECOND_PER_UNIT[$timeUnit],
+            $precision,
+            $mode
+        );
+    }
+
+    /**
+     * Throw exception if unit is not Exist
+     *
+     * @param int $unit Time unit key(TimeIntervalInterface::SECOND[DAY|HOUR|MINUTE])
+     */
+    protected function exceptionIfUnitNotExist(int $unit): void
+    {
+        if (!isset(self::SECOND_PER_UNIT[$unit])) {
+            throw new InvalidArgumentException(
+                'Unit is not Exist, TimeIntervalInterface::SECOND[DAY|HOUR|MINUTE] expected'
+            );
+        }
     }
 }

@@ -10,11 +10,11 @@ use Exception;
  */
 interface TimeIntervalInterface
 {
-    // Seconds per unit of time ratio
-    public const DAY = 86400;
-    public const HOUR = 3600;
-    public const MINUTE = 60;
-    public const SECOND = 1;
+    // Units of time
+    public const DAY    = 1;
+    public const HOUR   = 2;
+    public const MINUTE = 3;
+    public const SECOND = 4;
 
     /**
      * Create from "datestring" format.
@@ -50,13 +50,13 @@ interface TimeIntervalInterface
     /**
      * Modify time by value and measure(hour, minute, second).
      *
-     * @param int $value   Value
-     * @param int $measure Unit of time, TimeIntervalInterface::HOUR[MINUTE|SECOND]
+     * @param int $value    Value
+     * @param int $timeUnit Unit of time, TimeIntervalInterface::HOUR[MINUTE|SECOND]
      *                     default: SECOND
      *
      * @return TimeIntervalInterface
      */
-    public function modify(int $value, int $measure): TimeIntervalInterface;
+    public function modify(int $value, int $timeUnit): TimeIntervalInterface;
 
     /**
      * Add TimeIntervalInterface object to current object.
