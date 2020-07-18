@@ -50,13 +50,13 @@ interface TimeIntervalInterface
     /**
      * Modify time by value and measure(hour, minute, second).
      *
-     * @param int $value   Value
-     * @param int $measure Unit of time, TimeIntervalInterface::HOUR[MINUTE|SECOND]
+     * @param int $value    Value
+     * @param int $timeUnit Unit of time, TimeIntervalInterface::HOUR[MINUTE|SECOND]
      *                     default: SECOND
      *
      * @return TimeIntervalInterface
      */
-    public function modify(int $value, int $measure): TimeIntervalInterface;
+    public function modify(int $value, int $timeUnit): TimeIntervalInterface;
 
     /**
      * Add TimeIntervalInterface object to current object.

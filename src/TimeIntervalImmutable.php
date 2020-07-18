@@ -13,13 +13,15 @@ class TimeIntervalImmutable extends TimeInterval implements TimeIntervalInterfac
      * {@inheritdoc}
      *
      * @param int $value   Value
-     * @param int $measure Unit of time, TimeIntervalInterface::HOUR[MINUTE|SECOND]
+     * @param int $timeUnit Unit of time, TimeIntervalInterface::HOUR[MINUTE|SECOND]
      *                     default: SECOND
      *
      * @return TimeIntervalInterface
      */
-    public function modify(int $value, int $measure = self::SECOND): TimeIntervalInterface
+    public function modify(int $value, int $timeUnit = self::SECOND): TimeIntervalInterface
     {
-        return new static($this->seconds + ($value * $measure));
+        $this->exceptionIfUnitNotExists($timeUnit);
+
+        return new static($this->seconds + ($value * self::SECOND_PER_UNIT[$timeUnit]));
     }
 }
