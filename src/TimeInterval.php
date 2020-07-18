@@ -11,10 +11,6 @@ use InvalidArgumentException;
  */
 class TimeInterval implements TimeIntervalInterface
 {
-    // Error messages
-    protected const ERROR_CREATE_FROM_DATE_STRING = 'Wrong format, expected only values of days, hours, minutes and seconds';
-    protected const ERROR_CREATE_FROM_HMS = 'Wrong format, expected [-]h:m[:s]';
-
     /** @var int Amount of seconds */
     protected $seconds;
 
@@ -40,7 +36,9 @@ class TimeInterval implements TimeIntervalInterface
         $interval = DateInterval::createFromDateString($dateString);
 
         if (!empty($interval->y) || !empty($interval->m)) {
-            throw new InvalidArgumentException(self::ERROR_CREATE_FROM_DATE_STRING);
+            throw new InvalidArgumentException(
+                'Wrong format, expected only values of days, hours, minutes and seconds'
+            );
         }
 
         $seconds = $interval->d * self::DAY
@@ -62,7 +60,7 @@ class TimeInterval implements TimeIntervalInterface
         $value = trim($value);
 
         if (!preg_match('#^[-+]?\d+:\d+(:\d+)?$#is', $value)) {
-            throw new InvalidArgumentException(self::ERROR_CREATE_FROM_HMS);
+            throw new InvalidArgumentException('Wrong format, expected [-]h:m[:s]');
         }
 
         $sign = 1;
