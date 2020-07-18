@@ -10,7 +10,7 @@ use InvalidArgumentException;
 /**
  * Class TimeIntervalTest.
  */
-final class TimeIntervalTest extends TestCase
+class TimeIntervalTest extends TestCase
 {
     // Constants
     protected const SECOND_PER_DAY = 86400;
@@ -36,6 +36,26 @@ final class TimeIntervalTest extends TestCase
 
         $this->expectException(InvalidArgumentException::class);
         new TimeInterval(self::SECOND_PER_HOUR, self::FAKE_WRONG_TIME_UNIT);
+    }
+
+    /**
+     * @covers TimeInterval::modify
+     */
+    public function testModify()
+    {
+        $time = new TimeInterval(self::SECOND_PER_HOUR);
+
+        $time->modify(55);
+        $this->assertEquals(55 + self::SECOND_PER_HOUR, $time->convertToSeconds());
+
+        $time->modify(-55);
+        $this->assertEquals(self::SECOND_PER_HOUR, $time->convertToSeconds());
+
+        $time->modify(1, TimeIntervalInterface::HOUR);
+        $this->assertEquals(2 * self::SECOND_PER_HOUR, $time->convertToSeconds());
+
+        $time->modify(-1, TimeIntervalInterface::HOUR);
+        $this->assertEquals(self::SECOND_PER_HOUR, $time->convertToSeconds());
     }
 
     /**
@@ -184,11 +204,6 @@ final class TimeIntervalTest extends TestCase
     }
 
     public function testCreateDateInterval()
-    {
-
-    }
-
-    public function testModify()
     {
 
     }
