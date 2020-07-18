@@ -1,0 +1,34 @@
+{
+    "name": "korshunov/timeinterval",
+    "description": "",
+    "keywords": [
+        "timeinterval",
+        "time calculate",
+        "time convert"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sergey Korshunov",
+            "email": "sergey@korshunov.net",
+            "homepage": "https://korshunov.pro"
+        }
+    ],
+    "require": {
+        "php": "^7.1|^8.0",
+        "ext-json": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.2"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Korshunov\\TimeInterval\\": "src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
