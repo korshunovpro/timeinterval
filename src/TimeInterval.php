@@ -31,7 +31,7 @@ class TimeInterval implements TimeIntervalInterface
      */
     public function __construct(int $value = 0, $timeUnit = self::SECOND)
     {
-        $this->exceptionIfUnitNotExists($timeUnit);
+        $this->exceptionIfUnitNotExist($timeUnit);
 
         $this->seconds = $value * self::SECOND_PER_UNIT[$timeUnit];
     }
@@ -119,7 +119,7 @@ class TimeInterval implements TimeIntervalInterface
      */
     public function modify(int $value, int $timeUnit = self::SECOND): TimeIntervalInterface
     {
-        $this->exceptionIfUnitNotExists($timeUnit);
+        $this->exceptionIfUnitNotExist($timeUnit);
 
         $this->seconds += $value * self::SECOND_PER_UNIT[$timeUnit];
 
@@ -277,7 +277,7 @@ class TimeInterval implements TimeIntervalInterface
      */
     protected function convert(int $timeUnit, int $precision = 0, $mode = PHP_ROUND_HALF_UP): float
     {
-        $this->exceptionIfUnitNotExists($timeUnit);
+        $this->exceptionIfUnitNotExist($timeUnit);
 
         return round(
             $this->seconds / self::SECOND_PER_UNIT[$timeUnit],
@@ -287,15 +287,15 @@ class TimeInterval implements TimeIntervalInterface
     }
 
     /**
-     * Throw exception if unit is not exists
+     * Throw exception if unit is not Exist
      *
      * @param int $unit Time unit key(TimeIntervalInterface::SECOND[DAY|HOUR|MINUTE])
      */
-    protected function exceptionIfUnitNotExists(int $unit): void
+    protected function exceptionIfUnitNotExist(int $unit): void
     {
         if (!isset(self::SECOND_PER_UNIT[$unit])) {
             throw new InvalidArgumentException(
-                'Unit is not exists, TimeIntervalInterface::SECOND[DAY|HOUR|MINUTE] expected'
+                'Unit is not Exist, TimeIntervalInterface::SECOND[DAY|HOUR|MINUTE] expected'
             );
         }
     }

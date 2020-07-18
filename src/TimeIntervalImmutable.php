@@ -20,7 +20,7 @@ class TimeIntervalImmutable extends TimeInterval implements TimeIntervalInterfac
      */
     public function modify(int $value, int $timeUnit = self::SECOND): TimeIntervalInterface
     {
-        $this->exceptionIfUnitNotExists($timeUnit);
+        $this->exceptionIfUnitNotExist($timeUnit);
 
         return new static($this->seconds + ($value * self::SECOND_PER_UNIT[$timeUnit]));
     }
