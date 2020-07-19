@@ -76,7 +76,7 @@ class TimeInterval implements TimeIntervalInterface
             throw new InvalidArgumentException('Wrong format, expected [-]h:m[:s]');
         }
 
-        (0 === stripos($string, '-')) ? $sign = -1 : $sign = 1;
+        (0 === strpos($string, '-')) ? $sign = -1 : $sign = 1;
 
         $value = explode(':', $string);
 

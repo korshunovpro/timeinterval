@@ -7,7 +7,7 @@ namespace Korshunov\TimeInterval;
  *
  * @package Korshunov\TimeInterval
  */
-class TimeIntervalImmutable extends TimeInterval implements TimeIntervalInterface
+class TimeIntervalImmutable extends TimeInterval
 {
     /**
      * {@inheritdoc}

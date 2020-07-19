@@ -34,17 +34,17 @@ class TimeIntervalTest extends TestCase
         $time3 = new TimeInterval(1, TimeIntervalInterface::HOUR);
         $time4 = new TimeInterval(-1 * 1, TimeIntervalInterface::HOUR);
 
-        $this->assertEquals(self::SECOND_PER_HOUR, $time1->convertToSeconds());
-        $this->assertEquals(self::SECOND_PER_HOUR, $time2->convertToSeconds());
-        $this->assertEquals(self::SECOND_PER_HOUR, $time3->convertToSeconds());
-        $this->assertEquals(-1 * self::SECOND_PER_HOUR, $time4->convertToSeconds());
+        self::assertEquals(self::SECOND_PER_HOUR, $time1->convertToSeconds());
+        self::assertEquals(self::SECOND_PER_HOUR, $time2->convertToSeconds());
+        self::assertEquals(self::SECOND_PER_HOUR, $time3->convertToSeconds());
+        self::assertEquals(-1 * self::SECOND_PER_HOUR, $time4->convertToSeconds());
 
         $this->expectException(InvalidArgumentException::class);
         new TimeInterval(self::SECOND_PER_HOUR, self::FAKE_WRONG_TIME_UNIT);
 
         $float = 5.156;
         $timeFloat = new TimeInterval($float);
-        $this->assertEquals((int) $float, $timeFloat->convertToSeconds());
+        self::assertEquals((int) $float, $timeFloat->convertToSeconds());
     }
 
     /**
@@ -55,16 +55,16 @@ class TimeIntervalTest extends TestCase
         $time = new TimeInterval(self::SECOND_PER_HOUR);
 
         $time->modify(55);
-        $this->assertEquals(55 + self::SECOND_PER_HOUR, $time->convertToSeconds());
+        self::assertEquals(55 + self::SECOND_PER_HOUR, $time->convertToSeconds());
 
         $time->modify(-55);
-        $this->assertEquals(self::SECOND_PER_HOUR, $time->convertToSeconds());
+        self::assertEquals(self::SECOND_PER_HOUR, $time->convertToSeconds());
 
         $time->modify(1, TimeIntervalInterface::HOUR);
-        $this->assertEquals(2 * self::SECOND_PER_HOUR, $time->convertToSeconds());
+        self::assertEquals(2 * self::SECOND_PER_HOUR, $time->convertToSeconds());
 
         $time->modify(-1, TimeIntervalInterface::HOUR);
-        $this->assertEquals(self::SECOND_PER_HOUR, $time->convertToSeconds());
+        self::assertEquals(self::SECOND_PER_HOUR, $time->convertToSeconds());
     }
 
     /**
@@ -77,10 +77,10 @@ class TimeIntervalTest extends TestCase
         $time3Negative = new TimeInterval(-1 * self::SECOND_PER_HOUR);
 
         $time1->add($time2);
-        $this->assertEquals(2 * self::SECOND_PER_HOUR, $time1->convertToSeconds());
+        self::assertEquals(2 * self::SECOND_PER_HOUR, $time1->convertToSeconds());
 
         $time1->add($time3Negative);
-        $this->assertEquals(self::SECOND_PER_HOUR, $time1->convertToSeconds());
+        self::assertEquals(self::SECOND_PER_HOUR, $time1->convertToSeconds());
     }
 
     /**
@@ -93,10 +93,10 @@ class TimeIntervalTest extends TestCase
         $time3Negative = new TimeInterval(-1 * self::SECOND_PER_HOUR);
 
         $time1->sub($time2);
-        $this->assertEquals(0, $time1->convertToSeconds());
+        self::assertEquals(0, $time1->convertToSeconds());
 
         $time1->sub($time3Negative);
-        $this->assertEquals(self::SECOND_PER_HOUR, $time1->convertToSeconds());
+        self::assertEquals(self::SECOND_PER_HOUR, $time1->convertToSeconds());
     }
 
     /**
@@ -105,25 +105,25 @@ class TimeIntervalTest extends TestCase
     public function testConvertToHours()
     {
         $time = new TimeInterval(self::SECOND_PER_HOUR);
-        $this->assertEquals(
+        self::assertEquals(
             1,
             $time->convertToHours()
         );
 
         $time = new TimeInterval(self::SECOND_PER_HOUR * 1.8);
-        $this->assertEquals(
+        self::assertEquals(
             1.8,
             $time->convertToHours(1)
         );
 
         $time = new TimeInterval(self::SECOND_PER_HOUR * 1.85);
-        $this->assertEquals(
+        self::assertEquals(
             1.9,
             $time->convertToHours(1)
         );
 
         $time = new TimeInterval(self::SECOND_PER_HOUR * 1.85);
-        $this->assertEquals(
+        self::assertEquals(
             1.85,
             $time->convertToHours(2)
         );
@@ -135,25 +135,25 @@ class TimeIntervalTest extends TestCase
     public function testConvertToMinutes()
     {
         $time = new TimeInterval(self::SECOND_PER_MINUTE);
-        $this->assertEquals(
+        self::assertEquals(
             1,
             $time->convertToMinutes()
         );
 
         $time = new TimeInterval(self::SECOND_PER_MINUTE * 1.8);
-        $this->assertEquals(
+        self::assertEquals(
             1.8,
             $time->convertToMinutes(1)
         );
 
         $time = new TimeInterval(self::SECOND_PER_MINUTE * 1.85);
-        $this->assertEquals(
+        self::assertEquals(
             1.9,
             $time->convertToMinutes(1)
         );
 
         $time = new TimeInterval(self::SECOND_PER_MINUTE * 1.85);
-        $this->assertEquals(
+        self::assertEquals(
             1.85,
             $time->convertToMinutes(2)
         );
@@ -167,7 +167,7 @@ class TimeIntervalTest extends TestCase
         // int value
         foreach ($this->getTestSeconds() as $seconds) {
             $time = new TimeInterval($seconds);
-            $this->assertEquals(
+            self::assertEquals(
                 $seconds,
                 $time->convertToSeconds()
             );
@@ -176,7 +176,7 @@ class TimeIntervalTest extends TestCase
         // float value
         foreach ($this->getTestSecondsFloat() as $seconds) {
             $time = new TimeInterval($seconds);
-            $this->assertEquals(
+            self::assertEquals(
                 (int) $seconds,
                 $time->convertToSeconds()
             );
@@ -190,7 +190,7 @@ class TimeIntervalTest extends TestCase
     {
         foreach ($this->getTestSeconds() as $seconds) {
             $time = new TimeInterval($seconds);
-            $this->assertEquals(
+            self::assertEquals(
                 (int) ($seconds / self::SECOND_PER_HOUR),
                 $time->getHours()
             );
@@ -204,7 +204,7 @@ class TimeIntervalTest extends TestCase
     {
         foreach ($this->getTestSeconds() as $seconds) {
             $time = new TimeInterval($seconds);
-            $this->assertEquals(
+            self::assertEquals(
                 (int) ($seconds % self::SECOND_PER_HOUR / self::SECOND_PER_MINUTE),
                 $time->getMinutes()
             );
@@ -220,7 +220,7 @@ class TimeIntervalTest extends TestCase
             $seconds = $seconds + ($seconds / 2);
 
             $time = new TimeInterval($seconds);
-            $this->assertEquals(
+            self::assertEquals(
                 (int) ($seconds % self::SECOND_PER_HOUR % self::SECOND_PER_MINUTE),
                 $time->getSeconds()
             );
@@ -251,24 +251,24 @@ class TimeIntervalTest extends TestCase
                 (abs($timeHM[0]) * self::SECOND_PER_HOUR) + $timeHM[1] * self::SECOND_PER_MINUTE
             ) * $sign;
 
-            $this->assertEquals(
+            self::assertEquals(
                 $secondsCalculate,
                 $time->convertToSeconds()
             );
 
-            $this->assertEquals(
+            self::assertEquals(
                 (int) round($secondsCalculate / self::SECOND_PER_MINUTE),
                 $time->convertToMinutes()
             );
 
             $time = TimeInterval::createFromHMS(($sign < 0 ? '-' : '') . implode(':', $timeHMS));
-            $this->assertEquals(
+            self::assertEquals(
                 $seconds,
                 $time->convertToSeconds()
             );
 
             $time = TimeInterval::createFromHMS(($sign > 0 ? '+' : '-') . implode(':', $timeHMS));
-            $this->assertEquals($seconds, $time->convertToSeconds());
+            self::assertEquals($seconds, $time->convertToSeconds());
         }
     }
 
@@ -297,7 +297,7 @@ class TimeIntervalTest extends TestCase
     {
         $dateString = '1 day + 12 hours';
         $time = TimeInterval::createFromDateString($dateString);
-        $this->assertEquals(
+        self::assertEquals(
             86400 + 12 * 3600,
             $time->convertToSeconds()
         );
@@ -315,14 +315,14 @@ class TimeIntervalTest extends TestCase
     {
         $intervalSpec = 'P1DT12H';
         $time = TimeInterval::createFromIntervalSpec($intervalSpec);
-        $this->assertEquals(
+        self::assertEquals(
             86400 + 12 * 3600,
             $time->convertToSeconds()
         );
 
         $intervalSpec = 'PT3600S';
         $time = TimeInterval::createFromIntervalSpec($intervalSpec);
-        $this->assertEquals(
+        self::assertEquals(
             3600,
             $time->convertToSeconds()
         );
@@ -343,14 +343,14 @@ class TimeIntervalTest extends TestCase
         $date = new DateTimeImmutable('2020-01-01 00:00:00');
         $time = new TimeInterval(4200);
 
-        $this->assertInstanceOf(DateInterval::class, $time->createDateInterval());
+        self::assertInstanceOf(DateInterval::class, $time->createDateInterval());
 
-        $this->assertEquals(
+        self::assertEquals(
             (new DateTimeImmutable('2020-01-01 01:10:00')),
             $date->add($time->createDateInterval())
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             (new DateTimeImmutable('2019-12-31 22:50:00')),
             $date->sub($time->createDateInterval())
         );
@@ -367,8 +367,8 @@ class TimeIntervalTest extends TestCase
             $sign = ($seconds < 0) ? -1 : 1;
             $time = new TimeInterval($seconds);
 
-            $this->assertEquals(($sign < 0 ? '-' : '+'), $time->format('%R'));
-            $this->assertEquals(($sign < 0 ? '-' : ''), $time->format('%r'));
+            self::assertEquals(($sign < 0 ? '-' : '+'), $time->format('%R'));
+            self::assertEquals(($sign < 0 ? '-' : ''), $time->format('%r'));
         }
     }
 
@@ -380,16 +380,16 @@ class TimeIntervalTest extends TestCase
     public function testFormatHours()
     {
         $time = new TimeInterval(36447); // 10:04:07
-        $this->assertEquals('10', $time->format('%H'));
-        $this->assertEquals('10', $time->format('%h'));
+        self::assertEquals('10', $time->format('%H'));
+        self::assertEquals('10', $time->format('%h'));
 
         $time = new TimeInterval(7447); // 02:04:07
-        $this->assertEquals('02', $time->format('%H'));
-        $this->assertEquals('2', $time->format('%h'));
+        self::assertEquals('02', $time->format('%H'));
+        self::assertEquals('2', $time->format('%h'));
 
         $time = new TimeInterval(-7447); // 02:04:07
-        $this->assertEquals('02', $time->format('%H'));
-        $this->assertEquals('2', $time->format('%h'));
+        self::assertEquals('02', $time->format('%H'));
+        self::assertEquals('2', $time->format('%h'));
     }
 
     /**
@@ -400,16 +400,16 @@ class TimeIntervalTest extends TestCase
     public function testFormatMinutes()
     {
         $time = new TimeInterval(36247); // 10:04:07
-        $this->assertEquals('04', $time->format('%I'));
-        $this->assertEquals('4', $time->format('%i'));
+        self::assertEquals('04', $time->format('%I'));
+        self::assertEquals('4', $time->format('%i'));
 
         $time = new TimeInterval(650); // 00:10:50
-        $this->assertEquals('10', $time->format('%I'));
-        $this->assertEquals('10', $time->format('%i'));
+        self::assertEquals('10', $time->format('%I'));
+        self::assertEquals('10', $time->format('%i'));
 
         $time = new TimeInterval(-7447); // 02:04:07
-        $this->assertEquals('04', $time->format('%I'));
-        $this->assertEquals('4', $time->format('%i'));
+        self::assertEquals('04', $time->format('%I'));
+        self::assertEquals('4', $time->format('%i'));
     }
 
     /**
@@ -422,16 +422,16 @@ class TimeIntervalTest extends TestCase
     public function testFormatSeconds()
     {
         $time = new TimeInterval(36247); // 10:04:07
-        $this->assertEquals('07', $time->format('%S'));
-        $this->assertEquals('7', $time->format('%s'));
+        self::assertEquals('07', $time->format('%S'));
+        self::assertEquals('7', $time->format('%s'));
 
         $time = new TimeInterval(650); // 00:10:50
-        $this->assertEquals('50', $time->format('%S'));
-        $this->assertEquals('50', $time->format('%s'));
+        self::assertEquals('50', $time->format('%S'));
+        self::assertEquals('50', $time->format('%s'));
 
         $time = new TimeInterval(-7447); // 02:04:07
-        $this->assertEquals('07', $time->format('%S'));
-        $this->assertEquals('7', $time->format('%s'));
+        self::assertEquals('07', $time->format('%S'));
+        self::assertEquals('7', $time->format('%s'));
     }
 
     /**
@@ -444,16 +444,16 @@ class TimeIntervalTest extends TestCase
     public function testFormat()
     {
         $time = new TimeInterval(360000 + 86400 + 540 + 27);
-        $this->assertEquals('124:09:27', $time->format('%r%H:%I:%S'));
-        $this->assertEquals('+124:09:27', $time->format('%R%H:%I:%S'));
+        self::assertEquals('124:09:27', $time->format('%r%H:%I:%S'));
+        self::assertEquals('+124:09:27', $time->format('%R%H:%I:%S'));
 
         $time = new TimeInterval(-1 * (360000 + 86400 + 540 + 27));
-        $this->assertEquals('-124:09:27', $time->format('%r%H:%I:%S'));
-        $this->assertEquals('-124:09:27', $time->format('%R%H:%I:%S'));
+        self::assertEquals('-124:09:27', $time->format('%r%H:%I:%S'));
+        self::assertEquals('-124:09:27', $time->format('%R%H:%I:%S'));
 
         $time = new TimeInterval(3600 * 2 + 240 + 7); // 02:04:07
-        $this->assertEquals('02:04:07', $time->format('%r%H:%I:%S'));
-        $this->assertEquals('+02:04:07', $time->format('%R%H:%I:%S'));
+        self::assertEquals('02:04:07', $time->format('%r%H:%I:%S'));
+        self::assertEquals('+02:04:07', $time->format('%R%H:%I:%S'));
     }
 
     /**
