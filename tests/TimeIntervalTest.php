@@ -270,9 +270,24 @@ class TimeIntervalTest extends TestCase
             $time = TimeInterval::createFromHMS(($sign > 0 ? '+' : '-') . implode(':', $timeHMS));
             $this->assertEquals($seconds, $time->convertToSeconds());
         }
+    }
 
+    /**
+     * @covers TimeInterval::createFromHMS
+     */
+    public function testCreateFromHMSWrongString()
+    {
         $this->expectException(InvalidArgumentException::class);
         TimeInterval::createFromHMS('*1:00:10');
+    }
+
+    /**
+     * @covers TimeInterval::createFromHMS
+     */
+    public function testCreateFromHMSWhitespace()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        TimeInterval::createFromHMS(' 1:00:10');
     }
 
     /**
