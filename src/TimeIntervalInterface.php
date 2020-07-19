@@ -21,11 +21,22 @@ interface TimeIntervalInterface
      *
      * @see https://php.net/manual/en/dateinterval.createfromdatestring.php
      *
-     * @param string $time Date string
+     * @param string $dateString Date string
      *
      * @return TimeIntervalInterface
      */
-    public static function createFromDateString(string $time): TimeIntervalInterface;
+    public static function createFromDateString(string $dateString): TimeIntervalInterface;
+
+    /**
+     * Create from "interval spec" format.
+     *
+     * @see https://www.php.net/manual/en/dateinterval.construct.php
+     *
+     * @param string $intervalSpec Date string
+     *
+     * @return TimeIntervalInterface
+     */
+    public static function createFromIntervalSpec(string $intervalSpec): TimeIntervalInterface;
 
     /**
      * Create from HMS string [-]h:m[:s].
