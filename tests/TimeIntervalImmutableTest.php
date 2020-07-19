@@ -7,6 +7,8 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Class TimeIntervalImmutableTest.
+ *
+ * @coversDefaultClass TimeIntervalImmutable
  */
 class TimeIntervalImmutableTest extends TestCase
 {

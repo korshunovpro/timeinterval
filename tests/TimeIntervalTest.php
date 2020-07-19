@@ -12,6 +12,8 @@ use InvalidArgumentException;
 
 /**
  * Class TimeIntervalTest.
+ *
+ * @coversDefaultClass TimeInterval
  */
 class TimeIntervalTest extends TestCase
 {
@@ -339,11 +341,105 @@ class TimeIntervalTest extends TestCase
         );
     }
 
-    public function testFormat()
+    /**
+     * @covers TimeInterval::format()
+     *
+     * @throws Exception
+     */
+    public function testFormatSign()
     {
+        foreach ($this->getTestSeconds() as $seconds) {
+            $sign = ($seconds < 0) ? -1 : 1;
+            $time = new TimeInterval($seconds);
+
+            $this->assertEquals(($sign < 0 ? '-' : '+'), $time->format('%R'));
+            $this->assertEquals(($sign < 0 ? '-' : ''), $time->format('%r'));
+        }
     }
 
+    /**
+     * @covers TimeInterval::format()
+     *
+     * @throws Exception
+     */
+    public function testFormatHours()
+    {
+        $time = new TimeInterval(36447); // 10:04:07
+        $this->assertEquals('10', $time->format('%H'));
+        $this->assertEquals('10', $time->format('%h'));
 
+        $time = new TimeInterval(7447); // 02:04:07
+        $this->assertEquals('02', $time->format('%H'));
+        $this->assertEquals('2', $time->format('%h'));
+
+        $time = new TimeInterval(-7447); // 02:04:07
+        $this->assertEquals('02', $time->format('%H'));
+        $this->assertEquals('2', $time->format('%h'));
+    }
+
+    /**
+     * @covers TimeInterval::format
+     *
+     * @throws Exception
+     */
+    public function testFormatMinutes()
+    {
+        $time = new TimeInterval(36247); // 10:04:07
+        $this->assertEquals('04', $time->format('%I'));
+        $this->assertEquals('4', $time->format('%i'));
+
+        $time = new TimeInterval(650); // 00:10:50
+        $this->assertEquals('10', $time->format('%I'));
+        $this->assertEquals('10', $time->format('%i'));
+
+        $time = new TimeInterval(-7447); // 02:04:07
+        $this->assertEquals('04', $time->format('%I'));
+        $this->assertEquals('4', $time->format('%i'));
+    }
+
+    /**
+     * Тест форматирования секунд.
+     *
+     * @covers TimeInterval::format()
+     *
+     * @throws Exception
+     */
+    public function testFormatSeconds()
+    {
+        $time = new TimeInterval(36247); // 10:04:07
+        $this->assertEquals('07', $time->format('%S'));
+        $this->assertEquals('7', $time->format('%s'));
+
+        $time = new TimeInterval(650); // 00:10:50
+        $this->assertEquals('50', $time->format('%S'));
+        $this->assertEquals('50', $time->format('%s'));
+
+        $time = new TimeInterval(-7447); // 02:04:07
+        $this->assertEquals('07', $time->format('%S'));
+        $this->assertEquals('7', $time->format('%s'));
+    }
+
+    /**
+     * Тест форматирования по шаблону.
+     *
+     * @covers TimeInterval::format()
+     *
+     * @throws Exception
+     */
+    public function testFormat()
+    {
+        $time = new TimeInterval(360000 + 86400 + 540 + 27);
+        $this->assertEquals('124:09:27', $time->format('%r%H:%I:%S'));
+        $this->assertEquals('+124:09:27', $time->format('%R%H:%I:%S'));
+
+        $time = new TimeInterval(-1 * (360000 + 86400 + 540 + 27));
+        $this->assertEquals('-124:09:27', $time->format('%r%H:%I:%S'));
+        $this->assertEquals('-124:09:27', $time->format('%R%H:%I:%S'));
+
+        $time = new TimeInterval(3600 * 2 + 240 + 7); // 02:04:07
+        $this->assertEquals('02:04:07', $time->format('%r%H:%I:%S'));
+        $this->assertEquals('+02:04:07', $time->format('%R%H:%I:%S'));
+    }
 
     /**
      * Test data.
