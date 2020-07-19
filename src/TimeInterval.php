@@ -72,22 +72,17 @@ class TimeInterval implements TimeIntervalInterface
      */
     public static function createFromHMS(string $string): TimeIntervalInterface
     {
-        $string = trim($string);
-
         if (!preg_match('#^[-+]?\d+:\d+(:\d+)?$#is', $string)) {
             throw new InvalidArgumentException('Wrong format, expected [-]h:m[:s]');
         }
 
-        $sign = 1;
-        if (0 === stripos($string, '-')) {
-            $sign = -1;
-        }
+        (0 === stripos($string, '-')) ? $sign = -1 : $sign = 1;
 
         $value = explode(':', $string);
 
-        $hours = (int)$value[0] * self::SECOND_PER_UNIT[self::HOUR];
-        $minutes = (int)$value[1] * self::SECOND_PER_UNIT[self::MINUTE];
-        $seconds = !empty($value[2]) ? abs((int)$value[2]) : 0;
+        $hours = (int) $value[0] * self::SECOND_PER_UNIT[self::HOUR];
+        $minutes = (int) $value[1] * self::SECOND_PER_UNIT[self::MINUTE];
+        $seconds = !empty($value[2]) ? abs((int) $value[2]) : 0;
 
         $seconds = $sign * (abs($hours) + $minutes + $seconds);
 
