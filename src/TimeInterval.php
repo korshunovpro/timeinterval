@@ -194,7 +194,7 @@ class TimeInterval implements TimeIntervalInterface
      */
     public function getHours(): int
     {
-        return (int)($this->seconds / self::HOUR);
+        return (int) ($this->seconds / self::SECOND_PER_UNIT[self::HOUR]);
     }
 
     /**
@@ -202,7 +202,7 @@ class TimeInterval implements TimeIntervalInterface
      */
     public function getMinutes(): int
     {
-        return (int)($this->seconds % self::HOUR / self::MINUTE);
+        return (int) ($this->seconds % self::SECOND_PER_UNIT[self::HOUR] / self::SECOND_PER_UNIT[self::MINUTE]);
     }
 
     /**
@@ -210,7 +210,7 @@ class TimeInterval implements TimeIntervalInterface
      */
     public function getSeconds(): int
     {
-        return (int)($this->seconds % self::HOUR % self::MINUTE);
+        return (int) ($this->seconds % self::SECOND_PER_UNIT[self::HOUR] % self::SECOND_PER_UNIT[self::MINUTE]);
     }
 
     /**
