@@ -214,7 +214,7 @@ class TimeIntervalTest extends TestCase
     /**
      * @covers TimeInterval::getSeconds
      */
-    public function testGetSeconds()
+    public function testGetSeconds(): void
     {
         foreach ($this->getTestSeconds() as $seconds) {
             $seconds = $seconds + ($seconds / 2);
@@ -313,10 +313,10 @@ class TimeIntervalTest extends TestCase
      */
     public function testCreateFromIntervalSpec()
     {
-        $intervalSpec = 'P1DT12H';
+        $intervalSpec = 'P1DT12H5M15S';
         $time = TimeInterval::createFromIntervalSpec($intervalSpec);
         self::assertEquals(
-            86400 + 12 * 3600,
+            86400 + 12 * 3600 + 15 * 60 + 15,
             $time->convertToSeconds()
         );
 
@@ -469,10 +469,12 @@ class TimeIntervalTest extends TestCase
             1500,
             3600,
             10000,
+            86715,
             -5,
             -1500,
             -3600,
             -10000,
+            -86715
         ];
     }
 
