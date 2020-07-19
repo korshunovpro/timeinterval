@@ -12,7 +12,7 @@ class TimeIntervalImmutable extends TimeInterval implements TimeIntervalInterfac
     /**
      * {@inheritdoc}
      *
-     * @param int $value   Value
+     * @param int $value    Value
      * @param int $timeUnit Unit of time, TimeIntervalInterface::HOUR[MINUTE|SECOND]
      *                     default: SECOND
      *
