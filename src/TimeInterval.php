@@ -103,7 +103,7 @@ class TimeInterval implements TimeIntervalInterface
         $str[] = abs($this->getSeconds()) . 'S';
 
         $interval = new DateInterval('PT' . implode('', $str));
-        $interval->invert = (int)$this->seconds < 0;
+        $interval->invert = (int) $this->seconds < 0;
 
         return $interval;
     }
