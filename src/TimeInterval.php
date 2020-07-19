@@ -315,7 +315,7 @@ class TimeInterval implements TimeIntervalInterface
 
         return $interval->d * self::SECOND_PER_UNIT[self::DAY]
             + $interval->h * self::SECOND_PER_UNIT[self::HOUR]
-            + $interval->m * self::SECOND_PER_UNIT[self::MINUTE]
+            + $interval->i * self::SECOND_PER_UNIT[self::MINUTE]
             + $interval->s
             * ($interval->invert ? -1 : 1);
     }

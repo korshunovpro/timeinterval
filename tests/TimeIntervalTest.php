@@ -316,7 +316,7 @@ class TimeIntervalTest extends TestCase
         $intervalSpec = 'P1DT12H5M15S';
         $time = TimeInterval::createFromIntervalSpec($intervalSpec);
         self::assertEquals(
-            86400 + 12 * 3600 + 15 * 60 + 15,
+            86400 + 12 * 3600 + 5 * 60 + 15,
             $time->convertToSeconds()
         );
 
