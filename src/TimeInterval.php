@@ -39,7 +39,7 @@ class TimeInterval implements TimeIntervalInterface
     /**
      * {@inheritdoc}
      *
-     * @param string $time Date string
+     * @param string $dateString Date string
      *
      * @throws InvalidArgumentException
      */
@@ -47,19 +47,22 @@ class TimeInterval implements TimeIntervalInterface
     {
         $interval = DateInterval::createFromDateString($dateString);
 
-        if (!empty($interval->y) || !empty($interval->m)) {
-            throw new InvalidArgumentException(
-                'Wrong format, expected only values of days, hours, minutes and seconds'
-            );
-        }
+        return new static(static::intervalToSeconds($interval));
+    }
 
-        $seconds = $interval->d * self::SECOND_PER_UNIT[self::DAY]
-            + $interval->h * self::SECOND_PER_UNIT[self::HOUR]
-            + $interval->m * self::SECOND_PER_UNIT[self::MINUTE]
-            + $interval->s
-            * ($interval->invert ? -1 : 1);
+    /**
+     * {@inheritdoc}
+     *
+     * @param string $intervalSpec Interval spec string
+     *
+     * @throws InvalidArgumentException
+     * @throws Exception
+     */
+    public static function createFromIntervalSpec(string $intervalSpec): TimeIntervalInterface
+    {
+        $interval = new DateInterval($intervalSpec);
 
-        return new static($seconds);
+        return new static(static::intervalToSeconds($interval));
     }
 
     /**
@@ -298,5 +301,27 @@ class TimeInterval implements TimeIntervalInterface
                 'Unit is not Exist, TimeIntervalInterface::SECOND[DAY|HOUR|MINUTE] expected'
             );
         }
+    }
+
+    /**
+     * Convert DateInterval to seconds.
+     *
+     * @param DateInterval $interval
+     *
+     * @return int
+     */
+    protected static function intervalToSeconds(DateInterval $interval): int
+    {
+        if (!empty($interval->y) || !empty($interval->m)) {
+            throw new InvalidArgumentException(
+                'Wrong format, expected only values of days, hours, minutes and seconds'
+            );
+        }
+
+        return $interval->d * self::SECOND_PER_UNIT[self::DAY]
+            + $interval->h * self::SECOND_PER_UNIT[self::HOUR]
+            + $interval->m * self::SECOND_PER_UNIT[self::MINUTE]
+            + $interval->s
+            * ($interval->invert ? -1 : 1);
     }
 }
