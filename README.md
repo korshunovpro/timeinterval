@@ -207,3 +207,9 @@ $timeNegative->sub($time);
 
 echo $timeNegative->format('%r%H:%I:%S'); // -128:15:15
 echo $timeNegative->format('%r%x min. %s sec.'); // -7695 min. 15 sec.
+
+// convert TimeInterval to DateInterval
+$time = new TimeInterval($convertToSeconds);
+
+/** @var DateInterval $dateInterval */
+$dateInterval = $time->createDateInterval();
